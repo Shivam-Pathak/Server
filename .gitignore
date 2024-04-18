@@ -1,0 +1,29 @@
+# Node modules
+node_modules/
+
+# Log files
+logs/
+*.log
+
+# Environment variables
+.env
+
+# Dependency directories
+packages/
+
+# Built files
+dist/
+build/
+
+# macOS files
+.DS_Store
+
+# Editor-specific files
+.vscode/
+.idea/
+
+# npm debug log
+npm-debug.log*
+
+# Yarn integrity file
+.yarn-integrity
