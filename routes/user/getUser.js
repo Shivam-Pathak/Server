@@ -1,7 +1,6 @@
-const User = require('../../../models/user/userSchema');
+const User = require('../../models/user/userSchema');
 
-
-async function loginUser(req, res , next) {
+async function getUser(req, res) {
     try {
         // Fetch user data
         const response = await User.find();
@@ -16,5 +15,4 @@ async function loginUser(req, res , next) {
     }
 }
 
-
-module.exports = loginUser;
+module.exports = getUser;

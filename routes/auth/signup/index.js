@@ -1,52 +1,21 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const { SECRET } = require("../../../config");
-const { insertNewDocument, findOne } = require("../../../helpers");
-const Joi = require("joi");
-const { send_email } = require("../../../lib");
-const schema = Joi.object({
-  first_name: Joi.string().required(),
-  last_name: Joi.string().required(),
-  username: Joi.string().required(),
-  email: Joi.string().email().required(),
-  type: Joi.string().required(),
-  status: Joi.string().required(),
-  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{6,30}$")),
-});
+const User = require('../../../models/user/userSchema');
 
-const signUpUser = async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const validate = await schema.validateAsync(req.body);
-
-    const check_user_exist = await findOne("user", { email });
-    if (check_user_exist) {
-      return res
-        .status(404)
-        .send({ status: 404, message: "User already exist!" });
+async function signUpMiddleware(req, res) {
+    try {
+        const { name, email, password } = req.body;
+        // Check if user with the same email already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ error: 'User already exists' });
+        }
+        // Create a new user
+        const newUser = new User({ name, email, password });
+        await newUser.save();
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
+}
 
-    const new_user = {
-      ...req.body,
-      password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
-    };
-    const user = await insertNewDocument("user", new_user);
-    let token = jwt.sign({ id: new_user._id }, SECRET);
-    user.password = undefined;
-    send_email(
-      "registration-email",
-      {
-        username: user.first_name,
-        location: "test",
-      },
-      "Health Titan Pro",
-      "Awaiting Admin Approval",
-      user.email
-    );
-    return res.status(200).send({ status: 200, user, token });
-  } catch (e) {
-    return res.status(400).send({ status: 400, message: e.message });
-  }
-};
-
-module.exports = signUpUser;
+module.exports = signUpMiddleware;

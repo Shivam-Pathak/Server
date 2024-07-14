@@ -1,10 +1,10 @@
 const express = require("express");
-const { tokenVerification } = require("../middleware");
 const auth = require("./auth");
-const user = require("./user-type");
+const user = require("./user");
+
 const router = express.Router();
 
-// AUTH Routes * /api/auth/*
+// AUTH Routes * /api*
 router.use("/auth", auth);
 router.use("/user", user);
 

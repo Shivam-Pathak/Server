@@ -1,9 +1,8 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+const express = require('express');
 const mongoose = require("./config/db");
-const morgan = require("morgan");
-const cors = require("cors");
 const routes = require("./routes");
+const cors = require("cors");
+
 const app = express();
 
 // * Database connection
@@ -13,13 +12,13 @@ db.once("open", function () {
   console.log("db connected!");
 });
 
-// * Cors
 app.use(cors());
+app.use(express.json());
 
-// * Body Parser
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(morgan("short"));
+async function main() {
+}
+
+main();
 
 // * Api routes
 app.use("/api", routes);
@@ -35,4 +34,6 @@ app.use("*", (req, res) => {
 
 let PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server listening at http://localhost:${PORT}`);
+});
